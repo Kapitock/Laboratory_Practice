@@ -23,7 +23,7 @@ void GPIO_Ini(void)
     SET_BIT(GPIOD->OSPEEDR, GPIO_OSPEEDER_OSPEEDR2_0); // Настройка скорости работы 2 пина GPIOD на среднюю
     CLEAR_BIT(GPIOD->PUPDR, GPIO_PUPDR_PUPDR2_0);      // Отключение PU/PD резисторов для 2 пина GPIOD
 
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN);
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN);  // Включение тактирование на шину GPIOC
     SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0); // Включение внутренней подтяжки
 }
 
