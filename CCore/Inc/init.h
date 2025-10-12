@@ -20,7 +20,8 @@
 
 #define SET_BIT(REG, BIT)           (REG |= BIT)
 
-void GPIO_Ini(void);                             // Инициализация переменных
-void turning_on_the_LED(short int control_pc12); // Основное задание
-void LED_flickering(short int control_pc12);     // Дополнительное задание
-void change_PC12(short int control_pc13);        // Изменение параметров работы порта PC12
+void GPIO_Ini(void);                                            // Инициализация переменных
+short int click_counter(short int control, short int click);    // Счетчик нажатий
+void turning_on_the_LED(short int control_pc12);                // Основное задание
+void LED_flickering(short int control_pc12);                    // Дополнительное задание
+void change_PC12(short int control_pc13);                       // Изменение параметров работы порта PC12

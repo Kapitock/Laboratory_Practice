@@ -27,6 +27,16 @@ void GPIO_Ini(void)
     SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0); // Включение внутренней подтяжки
 }
 
+short int click_counter(short int control, short int click)
+{
+    control++;
+    if (control < 0 || control > click)
+    {
+        control = 0;
+    }
+    return control;
+}
+
 void turning_on_the_LED(short int control_pc12)
 {
     // Включение/выключение светодиодов
@@ -111,18 +121,18 @@ void change_PC12(short int control_pc13)
     // Изменение параметров PC12 с входа на вывод
     if (control_pc13 == 1)
     {
-        CLEAR_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);
-        SET_BIT(GPIOC->MODER, GPIO_MODER_MODE12_0);
-        SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR12_0);
-        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
+        CLEAR_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);      // Отключение внутренней подтяжки
+        SET_BIT(GPIOC->MODER, GPIO_MODER_MODE12_0);         // Настройка 12 пина на выход GPIOC
+        SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR12_0); // Настройка скорости работы 12 пина GPIOC на среднюю
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);               // Включение светодиода на 12 пине GPIOC
     }
 
     // Изменение параметров PC12 с вывода на вход
     else if (control_pc13 == 0)
     {
-        SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);
-        CLEAR_BIT(GPIOC->MODER, GPIO_MODER_MODE12_0);
-        CLEAR_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR12_0);
-        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12);
+        SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);          // Включение внутренней подтяжки
+        CLEAR_BIT(GPIOC->MODER, GPIO_MODER_MODE12_0);         // Включение работы 12 пина GPIOC на вход
+        CLEAR_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR12_0); // Включение скорости работы 12 пина GPIOC на низкую
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12);                 // Отключение светодидо на 12 пине GPIOC
     }
 }

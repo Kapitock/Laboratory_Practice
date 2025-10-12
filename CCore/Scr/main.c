@@ -6,6 +6,8 @@ short int control_pc13 = 0;
 
 int main(void)
 {
+    short int click_button_12 = 3;
+    short int click_button_13 = 1;
     // Инициализация портов
     GPIO_Ini();
     while (1)
@@ -13,11 +15,7 @@ int main(void)
         // Счетчик для работы светодиодов
         if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_12) == 0)
         {
-            control_pc12++;
-            if (control_pc12 < 0 || control_pc12 > 3)
-            {
-                control_pc12 = 0;
-            }
+            control_pc12 = click_counter(control_pc12, click_button_12);
             while (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_12) == 0)
             {
             }
@@ -26,11 +24,7 @@ int main(void)
         // Счетчик для изменения параметра работы порта PC12
         if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0)
         {
-            control_pc13++;
-            if (control_pc13 < 0 || control_pc13 > 1)
-            {
-                control_pc13 = 0;
-            }
+            control_pc13 = click_counter(control_pc13, click_button_13);
             while (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0)
             {
             }
