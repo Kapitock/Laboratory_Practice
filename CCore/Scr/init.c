@@ -117,7 +117,7 @@ void change_PC12(short int control_pc13)
         SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
     }
 
-    // Изменение параметров PC12 с вывода на вход
+    // Изменение параметров PC с вывода на вход
     else if (control_pc13 == 0)
     {
         SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);
