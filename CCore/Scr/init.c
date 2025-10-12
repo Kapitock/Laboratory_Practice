@@ -3,14 +3,14 @@
 void GPIO_Ini(void)
 {
     // Прямое обращение к памяти
-    *(uint32_t *)(0x40023800UL + 0x30UL) |= 0x02UL;
+    *(uint32_t *)(0x40023800UL + 0x30UL) |= 0x02UL;      // Включение тактирование на шину GPIOB
     *(uint32_t *)(0x40020400UL + 0x00UL) |= 0x0004000UL; // Настройка работы 7 пина в режиме вывода сигнала
     *(uint32_t *)(0x40020400UL + 0x04UL) |= 0x00UL;      // Настройка на Push-Pull работу 7 пина GPIOB (Output Push-Pull)
     *(uint32_t *)(0x40020400UL + 0x08UL) |= 0x0004000UL; // Настройка скорости работы 7 пина GPIOB на среднюю
     *(uint32_t *)(0x40020400UL + 0x0CUL) |= 0x00UL;      // Отключение PU/PD резисторов для 7 пина GPIOB
 
     // Обращение через дериктивы и макросы, написанные самим
-    SET_BIT(RCC_GPIO_EN, RCC_GPIOA_EN);
+    SET_BIT(RCC_GPIO_EN, RCC_GPIOA_EN);            // Включение тактирование на шину GPIOA
     SET_BIT(GPIOA_MODER, GPIOA_MODE_PIN0_OUT);     // Настройка работы 0 пина в режиме вывода сигнала
     SET_BIT(GPIOA_OTYPER, GPIOA_OTYPE_PIN0_PP);    // Настройка на Push-Pull работу 0 пина GPIOA (Output Push-Pull)
     SET_BIT(GPIOA_OSPEEDR, GPIOA_OSPEED_PIN0_MID); // Настройка скорости работы 0 пина GPIOA на среднюю
