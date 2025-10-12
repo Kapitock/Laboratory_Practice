@@ -29,6 +29,7 @@ void GPIO_Ini(void)
 
 void turning_on_the_LED(short int control_pc12)
 {
+    // Включение/выключение светодиодов
     if (control_pc12 == 0)
     {
         *(uint32_t *)(0x40020400UL + 0x18UL) |= 0x800000UL;
@@ -51,6 +52,7 @@ void turning_on_the_LED(short int control_pc12)
 
 void LED_flickering(short int control_pc12)
 {
+    // Включение/выключение свтодиодов с мерцанием
     if (control_pc12 == 0)
     {
         SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR7);

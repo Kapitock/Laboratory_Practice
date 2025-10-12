@@ -11,6 +11,7 @@ int main(void)
 
     while (1)
     {
+        // Счетчик для работы светодиодов
         if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_12) == 0 && control_pc12 == 0)
         {
             control_pc12 = 1;
@@ -40,7 +41,7 @@ int main(void)
             }
         }
 
-        // Изменение параметров PC12 с входа на вывод
+        // Счетчик для изменения параметра работы порта PC12
         if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0 && control_pc13 == 0)
         {
             control_pc13 = 1;
@@ -48,8 +49,6 @@ int main(void)
             {
             }
         }
-
-        // Изменение параметров PC12 с вывода на вход
         else if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0 && control_pc13 == 1)
         {
             control_pc13 = 0;
