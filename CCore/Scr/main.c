@@ -57,10 +57,10 @@ int main(void)
             }
         }
 
-        for (int timer = 0; timer < 40000; timer++)
+        for (int timer = 0; timer < 40000; timer++){}
 
-            // LED_flickering(control_pc12);  // Доп задание с мерцанием светодиодов
-            turning_on_the_LED(control_pc12);
+        // LED_flickering(control_pc12);  // Доп задание с мерцанием светодиодов
+        turning_on_the_LED(control_pc12);
         change_PC12(control_pc13);
     }
 }
