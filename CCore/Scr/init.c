@@ -27,7 +27,7 @@ void GPIO_Ini(void)
     SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0); // Включение внутренней подтяжки
 }
 
-short int click_counter(short int control, short int click)
+uint8_t click_counter(uint8_t control, uint8_t click)
 {
     control++;
     if (control < 0 || control > click)
@@ -37,39 +37,39 @@ short int click_counter(short int control, short int click)
     return control;
 }
 
-void turning_on_the_LED(short int control_pc12)
+void turning_on_the_LED(uint8_t LED)
 {
     // Включение/выключение светодиодов
-    if (control_pc12 == 0)
+    if (LED == 0)
     {
         *(uint32_t *)(0x40020400UL + 0x18UL) |= 0x800000UL;
         SET_BIT(GPIOA_BSRR, GPIOA_BSSR_PIN0_RESET);
         SET_BIT(GPIOD->BSRR, GPIO_BSRR_BR2);
     }
-    else if (control_pc12 == 1)
+    else if (LED == 1)
     {
         *(uint32_t *)(0x40020400UL + 0x18UL) |= 0x80UL;
     }
-    else if (control_pc12 == 2)
+    else if (LED == 2)
     {
         SET_BIT(GPIOA_BSRR, GPIOA_BSSR_PIN0_SET);
     }
-    else if (control_pc12)
+    else if (LED)
     {
         SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS2);
     }
 }
 
-void LED_flickering(short int control_pc12)
+void LED_flickering(uint8_t LED)
 {
     // Включение/выключение свтодиодов с мерцанием
-    if (control_pc12 == 0)
+    if (LED == 0)
     {
         SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR7);
         SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR0);
         SET_BIT(GPIOD->BSRR, GPIO_BSRR_BR2);
     }
-    else if (control_pc12 == 1)
+    else if (LED == 1)
     {
         SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
         for (uint32_t timer = 0; timer < 150000; timer++)
@@ -80,7 +80,7 @@ void LED_flickering(short int control_pc12)
         {
         }
     }
-    else if (control_pc12 == 2)
+    else if (LED == 2)
     {
         SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
         for (uint32_t timer = 0; timer < 150000; timer++)
@@ -93,7 +93,7 @@ void LED_flickering(short int control_pc12)
         }
         SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR0);
     }
-    else if (control_pc12 == 3)
+    else if (LED == 3)
     {
         SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
         for (uint32_t timer = 0; timer < 75000; timer++)
@@ -116,10 +116,10 @@ void LED_flickering(short int control_pc12)
     }
 }
 
-void change_PC12(short int control_pc13)
+void change_PC12(uint8_t LED_pc13)
 {
     // Изменение параметров PC12 с входа на вывод
-    if (control_pc13 == 1)
+    if (LED_pc13 == 1)
     {
         CLEAR_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);      // Отключение внутренней подтяжки
         SET_BIT(GPIOC->MODER, GPIO_MODER_MODE12_0);         // Настройка 12 пина на выход GPIOC
@@ -128,7 +128,7 @@ void change_PC12(short int control_pc13)
     }
 
     // Изменение параметров PC12 с вывода на вход
-    else if (control_pc13 == 0)
+    else if (LED_pc13 == 0)
     {
         SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPDR12_0);          // Включение внутренней подтяжки
         CLEAR_BIT(GPIOC->MODER, GPIO_MODER_MODE12_0);         // Включение работы 12 пина GPIOC на вход
