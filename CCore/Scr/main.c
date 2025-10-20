@@ -3,7 +3,6 @@
 // Счетчики для работы с кнопками
 uint8_t button_pc12 = 0;
 uint8_t button_pc13 = 0;
-
 // Счетчики, показывающие количество горящих светодиодов
 uint8_t LED = 0;
 uint8_t LED_pc13 = 0;
@@ -13,7 +12,6 @@ int main(void)
     // Максимальное количество допустимых нажатий кнокпок
     uint8_t click_button_12 = 3;
     uint8_t click_button_13 = 1;
-
     // Инициализация портов
     GPIO_Ini();
 
@@ -29,8 +27,6 @@ int main(void)
             }
         }
         
-        LED = button_pc12;
-
         // Счетчик для изменения параметра работы порта PC12
         if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0)
         {
@@ -40,12 +36,11 @@ int main(void)
             }
         }
 
-        LED_pc13 = button_pc13;
-
         for (int timer = 0; timer < 40000; timer++)
         {
         }
-
+        LED = button_pc12;
+        LED_pc13 = button_pc13;
         // LED_flickering(LED);  // Доп задание с мерцанием светодиодов
         turning_on_the_LED(LED);
         change_PC12(LED_pc13);
