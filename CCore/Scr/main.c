@@ -12,6 +12,7 @@ int main(void)
     // Максимальное количество допустимых нажатий кнокпок
     uint8_t click_button_12 = 3;
     uint8_t click_button_13 = 1;
+    
     // Инициализация портов
     GPIO_Ini();
 
