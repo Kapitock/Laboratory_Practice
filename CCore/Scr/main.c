@@ -1,49 +1,22 @@
 #include "../Inc/init.h"
 
-// Счетчики для работы с кнопками
-uint8_t button_pc12 = 0;
-uint8_t button_pc13 = 0;
-// Счетчики, показывающие количество горящих светодиодов
-uint8_t LED = 0;
-uint8_t LED_pc13 = 0;
-
 int main(void)
 {
-    // Максимальное количество допустимых нажатий кнокпок
-    uint8_t click_button_12 = 3;
-    uint8_t click_button_13 = 1;
-    
-    // Инициализация портов
-    GPIO_Ini();
 
-    // Бесконечный цикл выполнения программы
+    RCC_Init();
+
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOCEN);
+
+    SET_BIT(GPIOA->MODER, GPIO_MODER_MODER5_0);
+    SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDR_OSPEED5_0);
+    SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5);
+
+    SET_BIT(GPIOC->MODER, GPIO_MODER_MODER9_1);              // Настраиваем пин на альтернативный режим
+    SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDR_OSPEED9_Msk);       // Настраиваем пин на максимальную скорость работы
+    MODIFY_REG(GPIOC->AFR[1], GPIO_AFRH_AFSEL9_Msk, 0x00UL); // Выбираем тип альтернативной функции – Выход MCO2
+
     while (1)
     {
-        // Счетчик для работы светодиодов
-        if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_12) == 0)
-        {
-            button_pc12 = click_counter(button_pc12, click_button_12);
-            while (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_12) == 0)
-            {
-            }
-        }
-        
-        // Счетчик для изменения параметра работы порта PC12
-        if (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0)
-        {
-            button_pc13 = click_counter(button_pc13, click_button_13);
-            while (READ_BIT(GPIOC->IDR, GPIO_IDR_IDR_13) == 0)
-            {
-            }
-        }
-
-        for (int timer = 0; timer < 40000; timer++)
-        {
-        }
-        LED = button_pc12;
-        LED_pc13 = button_pc13;
-        // LED_flickering(LED);  // Доп задание с мерцанием светодиодов
-        turning_on_the_LED(LED);
-        change_PC12(LED_pc13);
+        SET_BIT(GPIOA->BSRR, GPIO_BSRR_BS5);
     }
 }
