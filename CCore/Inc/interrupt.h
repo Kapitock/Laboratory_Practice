@@ -1,5 +1,3 @@
-#include "init.h"
-
-uint8_t extern btnCount;
+#include "../Inc/init.h"
 
 void EXTI15_10_IRQnHandler(void);

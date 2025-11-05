@@ -1,5 +1,21 @@
 #include "../Inc/init.h"
 
+void GPIO_Init(void)
+{
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOCEN);
+
+    CLEAR_BIT(GPIOC->MODER, GPIO_MODER_MODE13);
+
+    SET_BIT(GPIOA->MODER, GPIO_MODER_MODER5_0);
+    SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDR_OSPEED5_0);
+    SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5);
+
+    // Настройка порта PC9 на MCO2
+    SET_BIT(GPIOC->MODER, GPIO_MODER_MODER9_1);                 // Настраиваем пин на альтернативный режим
+    SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDR_OSPEED9);              // Настраиваем пин на максимальную скорость работы
+    MODIFY_REG(GPIOC->AFR[1], GPIO_AFRH_AFSEL9, 0x00UL);        // Выбираем тип альтернативной функции – Выход MCO2
+}
+
 void RCC_Init(void)
 {
     /* Предварительная очистка регистров RCC */
@@ -11,12 +27,13 @@ void RCC_Init(void)
     CLEAR_BIT(RCC->CR, RCC_CR_HSEON | RCC_CR_CSSON);                                // Очистка битов HSEON, CSSON в регистре CR
     while (READ_BIT(RCC->CR, RCC_CR_HSERDY) != RESET);                              // Проверка очистки битов HSEON, CSSON
     CLEAR_BIT(RCC->CR, RCC_CR_HSEBYP);                                              // Очистка бита HSEBYP в регистре CR
+
     /* Настройка главного регистра RCC */
-    SET_BIT(RCC->CR, RCC_CR_HSION);                                                 // Запускаем внешний кварцевый резонатор
+    SET_BIT(RCC->CR, RCC_CR_HSION);                                                 // Запускаем HSI
     while (READ_BIT(RCC->CR, RCC_CR_HSIRDY) == RESET);                              // Ждём пока он запустится
 
-    CLEAR_REG(RCC->PLLCFGR);
-    CLEAR_BIT(RCC->PLLCFGR, RCC_PLLCFGR_PLLSRC_HSI);                                // Источник тактирования HSE
+    CLEAR_REG(RCC->PLLCFGR);                                                        // Очищаем регистр PLLCFGR 
+    SET_BIT(RCC->PLLCFGR, RCC_PLLCFGR_PLLSRC_HSI);                                  // Источник тактирования HSE
     SET_BIT(RCC->PLLCFGR, RCC_PLLCFGR_PLLM_3);                                      // Деление источника тактирования на 8
     SET_BIT(RCC->PLLCFGR, RCC_PLLCFGR_PLLN_6 | RCC_PLLCFGR_PLLN_5);                 // Настрока умножения на 96
     CLEAR_BIT(RCC->PLLCFGR, RCC_PLLCFGR_PLLP_0);                                    // Делитель для выхода PLL(PLLCLK) на 4 
@@ -37,14 +54,18 @@ void RCC_Init(void)
 
 void IQR_Init(void)
 {
+    /*Включение тактирование периферии SYSCFG*/
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN);
 
-    SET_BIT(SYSCFG->EXTICR[3], SYSCFG_EXTICR4_EXTI13_PC);
+    /*Обозначение снятие внешеного сигнала с линии PC13*/
+    MODIFY_REG(SYSCFG->EXTICR[3], SYSCFG_EXTICR4_EXTI13_Msk, SYSCFG_EXTICR4_EXTI13_PC);
 
-    SET_BIT(EXTI->IMR, EXTI_IMR_IM13);
-    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR13);
-    CLEAR_BIT(EXTI->FTSR, EXTI_FTSR_TR13);
+    /*Настройка регистров EXTI*/
+    SET_BIT(EXTI->IMR, EXTI_IMR_IM13);      // Включение маскирование 
+    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR13);    // Настройка отслеживания по фронту (кнопка была нажата)
+    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR13);    // Настройка отслеживания по спаду (кнопка была отпущена)
 
-    NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_EnableIRQ(EXTI15_10_IRQn);
+    /*Настройка регистров NVIC*/
+    NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));    // Выбор приоретета прерывания
+    NVIC_EnableIRQ(EXTI15_10_IRQn);                                                             // Разрешение прерывания
 }
