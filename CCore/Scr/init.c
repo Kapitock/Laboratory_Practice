@@ -58,14 +58,25 @@ void IQR_Init(void)
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN);
 
     /*Обозначение снятие внешеного сигнала с линии PC13*/
-    MODIFY_REG(SYSCFG->EXTICR[3], SYSCFG_EXTICR4_EXTI13_Msk, SYSCFG_EXTICR4_EXTI13_PC);
+    SET_BIT(SYSCFG->EXTICR[3],  SYSCFG_EXTICR4_EXTI13_PC);
 
     /*Настройка регистров EXTI*/
-    SET_BIT(EXTI->IMR, EXTI_IMR_IM13);      // Включение маскирование 
-    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR13);    // Настройка отслеживания по фронту (кнопка была нажата)
-    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR13);    // Настройка отслеживания по спаду (кнопка была отпущена)
+    SET_BIT(EXTI->IMR, EXTI_IMR_IM13);          // Включение маскирование 
+    CLEAR_BIT(EXTI->EMR, EXTI_EMR_EM13);        // Отключение генерации события
+    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR13);        // Настройка отслеживания по спаду (кнопка была отпущена)
+    //SET_BIT(EXTI->FTSR, EXTI_FTSR_TR13);        // Настройка отслеживания по фронту (кнопка была нажата)
 
     /*Настройка регистров NVIC*/
     NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));    // Выбор приоретета прерывания
     NVIC_EnableIRQ(EXTI15_10_IRQn);                                                             // Разрешение прерывания
+}
+
+void SysTick_Init(void)
+{
+    CLEAR_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Msk);                                          // Выклбчим счетчик
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Msk);                                           // Разрешаем прерывание по системному таймеру
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_CLKSOURCE_Msk);                                         // Источник тактирования будет идти из AHB без деления
+    MODIFY_REG(SysTick->LOAD, SysTick_LOAD_RELOAD_Msk, 95999 << SysTick_LOAD_RELOAD_Pos);       // Значение, с которого начинается счет, эквивалентное 1 кГц
+    MODIFY_REG(SysTick->VAL, SysTick_VAL_CURRENT_Msk, 95999 << SysTick_VAL_CURRENT_Pos);        // Очистка поля
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Msk);                                            // Включим счетчик
 }
