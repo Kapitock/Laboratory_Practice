@@ -1,10 +1,8 @@
 #include "../Inc/init.h"
 #include "../Inc/interrupt.h"
 
-#define FLICKER_PERIOD 2000
-
 uint16_t GlobalTickCount = 0;
-uint16_t DelayTickCount = 0;
+uint16_t ButtonTickCount = 0;
 uint8_t btnCount = 0;
 bool LedState = false;
 
@@ -19,28 +17,14 @@ int main(void)
     {
         if (LedState)
         {
-            SET_BIT(GPIOA->BSRR, GPIO_BSRR_BS5);
+            SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12 | GPIO_BSRR_BS11 | GPIO_BSRR_BS10 |
+                                    GPIO_BSRR_BS8 | GPIO_BSRR_BS6 | GPIO_BSRR_BS5);
         }
         else
         {
-            SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5);
+            SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BR11 | GPIO_BSRR_BR10 |
+                                    GPIO_BSRR_BR8 | GPIO_BSRR_BR6 | GPIO_BSRR_BR5);
         }
-        // if (GlobalTickCount >= FLICKER_PERIOD / 2)
-        // { // Если прошло 1000 прерываний системного таймера = 1 секунда
-        //         SET_BIT(GPIOA->BSRR, GPIO_BSRR_BS5); // Включаем светодиод
-        //     if (GlobalTickCount >= FLICKER_PERIOD)
-        //     { // Если прошло 2000 прерываний системного таймера = 2 секунды
-        //             GlobalTickCount = 0; // Обнуляем переменную счётчика системного таймера
-        //     }
-        // }
-        // else
-        // {
-        //     SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5); // Иначе выключаем светодиод
-        // }
-        SET_BIT(GPIOA->BSRR, GPIO_BSRR_BS5);
-        delay(1000);
-        SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5);
-        delay(1000);
     }
     return 0;
 }

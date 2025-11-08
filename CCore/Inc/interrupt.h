@@ -1,5 +1,5 @@
 #include "../Inc/init.h"
 
-void delay(uint16_t number);
+void delay(uint16_t time_delay);
 void SysTick_Handler(void);
-void EXTI15_10_IRQHandler(void);
+void EXTI3_IRQHandler(void);

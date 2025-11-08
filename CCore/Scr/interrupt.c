@@ -3,11 +3,12 @@
 extern uint16_t GlobalTickCount;
 extern uint8_t btnCount;
 extern bool LedState;
-extern uint16_t DelayTickCount;
+uint16_t DelayTickCount = 0;
+extern uint16_t ButtonTickCount;
 
-void delay(uint16_t number)
+void delay(uint16_t time_delay)
 {
-    while(DelayTickCount < number){}
+    while(DelayTickCount < time_delay){}
     DelayTickCount = 0;
 }
 
@@ -15,15 +16,23 @@ void SysTick_Handler(void)
 {
     GlobalTickCount++;
     DelayTickCount++;
+    ButtonTickCount++;
 }
 
-void EXTI15_10_IRQHandler(void)
+void EXTI3_IRQHandler(void)
 {
+    SET_BIT(EXTI->PR, EXTI_PR_PR3);
     btnCount++;
-    if (btnCount >= 2)
+    if (READ_BIT(GPIOC->IDR, GPIO_IDR_ID3) == RESET)
+    {
+        ButtonTickCount = 0;
+        btnCount = 0;
+    }
+    if(ButtonTickCount >= 2000)
     {
         LedState = !LedState;
         btnCount = 0;
+        ButtonTickCount = 0;
     }
-    SET_BIT(EXTI->PR, EXTI_PR_PR13);
+    else if (ButtonTickCount <= 2000){}
 }
