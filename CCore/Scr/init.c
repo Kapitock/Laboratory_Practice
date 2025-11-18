@@ -1,5 +1,20 @@
 #include "../Inc/init.h"
 
+uint32_t counter_timer = 0;
+bool f = false;
+
+void GPIO_Init(void)
+{
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN);
+
+    SET_BIT(GPIOC->MODER, GPIO_MODER_MODER12_0 | GPIO_MODER_MODER10_0 | GPIO_MODER_MODER11_0
+                            | GPIO_MODER_MODER5_0 | GPIO_MODER_MODER6_0 | GPIO_MODER_MODER8_0);
+    SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR12_0 | GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR11_0
+                            | GPIO_OSPEEDER_OSPEEDR5_0 | GPIO_OSPEEDER_OSPEEDR6_0 | GPIO_OSPEEDER_OSPEEDR8_0);
+    SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BR10 | GPIO_BSRR_BR11
+                            | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
+}
+
 void RCC_Init(void)
 {
     /*Предварительная очистка регистров RCC */
@@ -38,4 +53,79 @@ void RCC_Init(void)
     /*Включение блока PLL*/
     SET_BIT(RCC->CR, RCC_CR_PLLON);
     while (READ_BIT(RCC->CR, RCC_CR_PLLRDY) == RESET);
+}
+
+void TIMER_Init(void)
+{
+    /*Включение тактирования таймера*/
+    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
+
+    CLEAR_REG(TIM3->CR1);
+    SET_BIT(TIM3->CR1, TIM_CR1_ARPE);
+
+    CLEAR_REG(TIM3->PSC);
+    SET_BIT(TIM3->PSC, 47999UL);
+    CLEAR_REG(TIM3->ARR);
+    SET_BIT(TIM3->ARR, 19UL);
+
+    SET_BIT(TIM3->EGR, TIM_EGR_UG);
+
+    SET_BIT(TIM3->DIER, TIM_DIER_UIE);
+    NVIC_SetPriority(TIM3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0)); // Выбор приоретета прерывания
+    NVIC_EnableIRQ(TIM3_IRQn);
+
+    SET_BIT(TIM3->CR1, TIM_CR1_CEN);
+}
+
+void IQR_Init(void)
+{
+    /*Включение тактирование периферии SYSCFG*/
+    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN);
+
+    /*Обозначение снятие внешеного сигнала с линии PC3*/
+    SET_BIT(SYSCFG->EXTICR[3], SYSCFG_EXTICR4_EXTI13_PC);
+
+    /*Настройка регистров EXTI*/
+    SET_BIT(EXTI->IMR, EXTI_IMR_IM13);   // Включение маскирование
+    CLEAR_BIT(EXTI->EMR, EXTI_EMR_EM13); // Отключение генерации события
+    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR13); // Настройка отслеживания по спаду (кнопка была отпущена)
+    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR13); // Настройка отслеживания по фронту (кнопка была нажата)
+
+    /*Настройка регистров NVIC*/
+    NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0)); // Выбор приоретета прерывания
+    NVIC_EnableIRQ(EXTI15_10_IRQn);                                                          // Разрешение прерывания
+}
+
+void Flickering_LED(uint8_t Frequency)
+{
+    if (counter_timer >= 0 && counter_timer < Frequency)
+    {
+        f = true;
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12 | GPIO_BSRR_BR10 | GPIO_BSRR_BR11 | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
+    }
+    else if (counter_timer >= Frequency && counter_timer < 2 * Frequency)
+    {
+        f = false;
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BS10 | GPIO_BSRR_BR11 | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
+    }
+    else if (counter_timer >= 2 * Frequency && counter_timer < 3 * Frequency)
+    {
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BR10 | GPIO_BSRR_BS11 | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
+    }
+    else if (counter_timer >= 3 * Frequency && counter_timer < 4 * Frequency)
+    {
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BR10 | GPIO_BSRR_BR11 | GPIO_BSRR_BS5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
+    }
+    else if (counter_timer >= 4 * Frequency && counter_timer < 5 * Frequency)
+    {
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BR10 | GPIO_BSRR_BR11 | GPIO_BSRR_BR5 | GPIO_BSRR_BS6 | GPIO_BSRR_BR8);
+    }
+    else if (counter_timer >= 5 * Frequency && counter_timer < 6 * Frequency)
+    {
+        SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BR10 | GPIO_BSRR_BR11 | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BS8);
+    }
+    else if (counter_timer >= 6 * Frequency)
+    {
+        counter_timer = 0;
+    }
 }
