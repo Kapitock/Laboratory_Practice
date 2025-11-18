@@ -1,7 +1,6 @@
 #include "../Inc/init.h"
 
 uint32_t counter_timer = 0;
-bool f = false;
 
 void GPIO_Init(void)
 {
@@ -100,12 +99,10 @@ void Flickering_LED(uint8_t Frequency)
 {
     if (counter_timer >= 0 && counter_timer < Frequency)
     {
-        f = true;
         SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12 | GPIO_BSRR_BR10 | GPIO_BSRR_BR11 | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
     }
     else if (counter_timer >= Frequency && counter_timer < 2 * Frequency)
     {
-        f = false;
         SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12 | GPIO_BSRR_BS10 | GPIO_BSRR_BR11 | GPIO_BSRR_BR5 | GPIO_BSRR_BR6 | GPIO_BSRR_BR8);
     }
     else if (counter_timer >= 2 * Frequency && counter_timer < 3 * Frequency)
