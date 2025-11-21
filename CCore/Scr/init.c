@@ -59,21 +59,22 @@ void TIMER_Init(void)
     /*Включение тактирования таймера*/
     SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
 
-    CLEAR_REG(TIM3->CR1);
-    SET_BIT(TIM3->CR1, TIM_CR1_ARPE);
+    CLEAR_REG(TIM3->CR1);               // Очистка регистра CR1
+    SET_BIT(TIM3->CR1, TIM_CR1_ARPE);   //     
 
-    CLEAR_REG(TIM3->PSC);
-    SET_BIT(TIM3->PSC, 47999UL);
-    CLEAR_REG(TIM3->ARR);
-    SET_BIT(TIM3->ARR, 19UL);
+    CLEAR_REG(TIM3->PSC);           // Очистка регистра PSC от мусора
+    SET_BIT(TIM3->PSC, 47999UL);    // Делитель частоты тактирования для таймера (чF_psc = x + 1)
+    CLEAR_REG(TIM3->ARR);           // Очистка регистра ARR от мусора
+    SET_BIT(TIM3->ARR, 19UL);       // Установка времени прерывания таймера (время удвоено, по факту таймер прерывания срабатывает раз в 10 мс) 
+    //(F_arr = x + 1)
 
-    SET_BIT(TIM3->EGR, TIM_EGR_UG);
+    SET_BIT(TIM3->EGR, TIM_EGR_UG); // Принудительное обнуления события UG
 
-    SET_BIT(TIM3->DIER, TIM_DIER_UIE);
+    SET_BIT(TIM3->DIER, TIM_DIER_UIE);  // Разрешение прерывания по событию UIE
     NVIC_SetPriority(TIM3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0)); // Выбор приоретета прерывания
     NVIC_EnableIRQ(TIM3_IRQn);
 
-    SET_BIT(TIM3->CR1, TIM_CR1_CEN);
+    SET_BIT(TIM3->CR1, TIM_CR1_CEN);    // Включение таймера
 }
 
 void IQR_Init(void)
