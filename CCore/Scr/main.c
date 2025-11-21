@@ -7,14 +7,12 @@ int main(void)
     RCC_Init();      // Настройка тактирования
     TIM10_Init();    // Настройка таймера
     IQR_Init();      // Настройка прерывания
-    TIM3_PWM_Init(); // Настройка ШИМ
-    TIM1_PWM_Init();
-    TIM5_PWM_Init();
+    TIM3_PWM_Init(); // Настройка ШИМ TIM3
+    TIM1_PWM_Init(); // Настройка ШИМ TIM1
+    TIM5_PWM_Init(); // Настройка ШИМ TIM5
 
     while (1)
-    {
-        // MODIFY_REG(TIM3->CCR1, TIM_CCR1_CCR1_Msk, 200UL);
-        // MODIFY_REG(TIM3->CCR2, TIM_CCR2_CCR2_Msk, 200UL);
+    {    
     }
     return 0;
 }

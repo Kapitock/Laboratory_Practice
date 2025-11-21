@@ -104,7 +104,7 @@ void IQR_Init(void)
 
 void TIM3_PWM_Init(void)
 {
-    // Тактирование порта A и TIM3
+    // Тактирование порта B и TIM3
     SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
 
@@ -146,7 +146,7 @@ void TIM3_PWM_Init(void)
 
 void TIM1_PWM_Init(void)
 {
-    // Тактирование порта A и TIM3
+    // Тактирование порта A и TIM1
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM1EN);
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
 
@@ -193,7 +193,7 @@ void TIM5_PWM_Init(void)
     SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM5EN);
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
 
-    // PB4 и PB5 в Alternate Function mode
+    // PA0 и PA1 в Alternate Function mode
     MODIFY_REG(GPIOA->MODER, GPIO_MODER_MODE0 | GPIO_MODER_MODE1, GPIO_MODER_MODE0_1 | GPIO_MODER_MODE1_1);
 
     // Назначаем AF1 (TIM3) для PA0 и PA1
