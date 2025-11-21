@@ -1,10 +1,11 @@
 #include "../Inc/interrupt.h"
 
-uint8_t counter = 0;
+uint8_t counter1 = 0;
+extern uint8_t type;
 extern uint32_t counter_timer;
-uint16_t Frequency_1Hz = 100;
-uint16_t Frequency_2Hz = 50;
-uint16_t Frequency_4Hz = 25;
+uint32_t Frequency_1Hz = 1000;
+uint32_t Frequency_2Hz = 500;
+uint32_t Frequency_4Hz = 250;
 
 void EXTI15_10_IRQHandler(void)
 {
@@ -15,21 +16,37 @@ void EXTI15_10_IRQHandler(void)
     else
     {
         counter_timer = 0;
-        counter++;
-    }
-    if (counter > 2)
-    {
-        counter = 0;
+        counter1++;
+        if (counter1 > 2)
+        {
+            counter1 = 0;
+        }
     }
 }
 
-void TIM3_IRQHandler(void)
+void EXTI3_IRQHandler(void)
 {
-    if (READ_BIT(TIM3->SR, TIM_SR_UIF))
+    SET_BIT(EXTI->PR, EXTI_PR_PR3); // Выход с обработчика прерываний
+    if (READ_BIT(GPIOC->IDR, GPIO_IDR_ID3) == RESET)
     {
-        CLEAR_BIT(TIM3->SR, TIM_SR_UIF);
-        counter_timer++;
-        switch (counter)
+    }
+    else
+    {
+        type++;
+        if (type > 4)
+        {
+            type = 0;
+        }
+    }
+}
+
+void TIM1_UP_TIM10_IRQHandler(void)
+{
+    if (TIM10->SR & TIM_SR_UIF)
+    {                             // Проверка флага обновления
+        TIM10->SR &= ~TIM_SR_UIF; // Сброс флага
+        counter_timer++;          // Увеличиваем счетчик каждую 1 мс
+        switch (counter1)
         {
         case 0:
             Flickering_LED(Frequency_1Hz);

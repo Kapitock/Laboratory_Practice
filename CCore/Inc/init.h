@@ -4,6 +4,9 @@
 
 void GPIO_Init(void);
 void RCC_Init(void);
-void TIMER_Init(void);
+void TIM10_Init(void);
 void IQR_Init(void);
-void Flickering_LED(uint8_t Frequency);
+void Flickering_LED(uint32_t Frequency);
+void TIM3_PWM_Init(void);
+void TIM1_PWM_Init(void);
+void TIM5_PWM_Init(void);
