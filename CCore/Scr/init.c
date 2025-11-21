@@ -60,7 +60,7 @@ void TIMER_Init(void)
     SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
 
     CLEAR_REG(TIM3->CR1);               // Очистка регистра CR1
-    SET_BIT(TIM3->CR1, TIM_CR1_ARPE);   //     
+    SET_BIT(TIM3->CR1, TIM_CR1_ARPE);   // Включение APRE (ARR вступает в силу)   
 
     CLEAR_REG(TIM3->PSC);           // Очистка регистра PSC от мусора
     SET_BIT(TIM3->PSC, 47999UL);    // Делитель частоты тактирования для таймера (чF_psc = x + 1)
